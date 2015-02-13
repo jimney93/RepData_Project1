@@ -102,6 +102,12 @@ sprintf(&quot;The 5 minute interval %.0f has the max average number of steps %f&
 </div>
 <div id="imputing-missing-values" class="section level2">
 <h2>Imputing missing values</h2>
+<div id="number-of-missing-values" class="section level3">
+<h3>number of missing values</h3>
+<pre class="r"><code>sumNA &lt;- sum(is.na(data$steps))
+sprintf(&quot;Number of missing values %.0f&quot;, sumNA)</code></pre>
+<pre><code>## [1] &quot;Number of missing values 2304&quot;</code></pre>
+</div>
 </div>
 <div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>

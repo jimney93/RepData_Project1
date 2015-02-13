@@ -38,11 +38,17 @@ qplot(interval, avg.steps, data = df, geom = "line") +
     scale_x_continuous(breaks = seq(0, 3000, by = 100)) +
     scale_y_continuous(breaks = seq(0, 250, by = 25)) +
     theme(axis.text.x = element_text(angle = 30, hjust = 0.5, vjust = 0.5))
+
 x <- df[which.max(df$avg.steps),]
 sprintf("The 5 minute interval %.0f has the max average number of steps %f", x$interval, x$avg.steps)
 ```
 
 ## Imputing missing values
+### number of missing values
+```{r missing values}
+sumNA <- sum(is.na(data$steps))
+sprintf("Number of missing values %.0f", sumNA)
+```
 
 
 

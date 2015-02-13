@@ -64,6 +64,16 @@ sprintf("The 5 minute interval %.0f has the max average number of steps %f", x$i
 ```
 
 ## Imputing missing values
+### number of missing values
+
+```r
+sumNA <- sum(is.na(data$steps))
+sprintf("Number of missing values %.0f", sumNA)
+```
+
+```
+## [1] "Number of missing values 2304"
+```
 
 
 

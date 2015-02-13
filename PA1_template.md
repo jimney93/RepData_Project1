@@ -55,11 +55,12 @@ qplot(interval, avg.steps, data = df, geom = "line") +
 ![](PA1_template_files/figure-html/average steps-1.png) 
 
 ```r
-print(paste("the median is ", med))
+x <- df[which.max(df$avg.steps),]
+sprintf("The 5 minute interval %.0f has the max average number of steps %f", x$interval, x$avg.steps)
 ```
 
 ```
-## [1] "the median is  10765"
+## [1] "The 5 minute interval 835 has the max average number of steps 206.169811"
 ```
 
 ## Imputing missing values

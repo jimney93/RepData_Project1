@@ -7,7 +7,7 @@ output:
 
 
 ## Loading and preprocessing the data
-```{r load and preprocess}
+```{r load and preprocess, message=FALSE, warning=FALSE}
 unzip("activity.zip")
 data <- read.csv("activity.csv")
 ```
@@ -16,41 +16,93 @@ data <- read.csv("activity.csv")
 ```{r total number of steps, message=FALSE, warning=FALSE}
 library(dplyr)
 library(ggplot2)
-df <- summarize(na.omit(data) %>% group_by(date), total.steps = sum(steps))
-qplot(date, total.steps, data = df, stat = "identity", geom = "histogram") +
-    geom_histogram(binwidth = 10) +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 5))
 
-avg <- mean(df$total.steps, na.rm=T)
+df <- summarize(na.omit(data) %>% group_by(date), steps = sum(steps))
+qplot(date, steps, data = df, stat = "identity", geom = "histogram") +
+    geom_histogram(binwidth = 10) +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 5)) +
+    xlab("observation dates") +
+    ylab("total steps") +
+    labs(title = "missing values removed")
+
+avg <- mean(df$steps)
 print(paste("the mean is ", avg))
 
-med <- median(df$total.steps, na.rm=T)
+med <- median(df$steps)
 print(paste("the median is ", med))
+
 ```
 
 ## What is the average daily activity pattern?
-```{r average steps}
+```{r average steps, message=FALSE, warning=FALSE}
 library(dplyr)
 library(ggplot2)
-df <- summarize(na.omit(data) %>% group_by(interval), avg.steps = mean(steps))
+df_interval <- summarize(na.omit(data) %>% group_by(interval), steps = mean(steps))
 
-qplot(interval, avg.steps, data = df, geom = "line") +
+qplot(interval, steps, data = df_interval, geom = "line") +
     scale_x_continuous(breaks = seq(0, 3000, by = 100)) +
     scale_y_continuous(breaks = seq(0, 250, by = 25)) +
-    theme(axis.text.x = element_text(angle = 30, hjust = 0.5, vjust = 0.5))
+    theme(axis.text.x = element_text(angle = 30, hjust = 0.5, vjust = 0.5)) +
+    xlab("time interval") +
+    ylab("total steps") +
+    labs(title = "average daily activity")
 
-x <- df[which.max(df$avg.steps),]
+x <- df_interval[which.max(df_interval$steps),]
 sprintf("The 5 minute interval %.0f has the max average number of steps %f", x$interval, x$avg.steps)
 ```
 
 ## Imputing missing values
 ### number of missing values
-```{r missing values}
+```{r missing values, message=FALSE, warning=FALSE}
 sumNA <- sum(is.na(data$steps))
 sprintf("Number of missing values %.0f", sumNA)
+
 ```
+### use interval mean of primary data set to address NA values
+```{r supply missing values}
+library(dplyr)
+library(ggplot2)
 
+# calculate mean per interval 
+#df <- summarize(na.omit(data) %>% group_by(interval), avg.steps = mean(steps))
+#df1 <- summarize(df %>% group_by(interval), steps = mean(avg.steps))
 
+# NA rows 
+
+data_NA <- filter(data, is.na(steps))
+data_noNA <- filter(data, !is.na(steps))
+data_NA$steps <- NULL
+
+# add steps column
+df2 <- inner_join(data_NA, df_interval)
+
+# re-arrange columns
+df2 <- df2[c(3, 1, 2)]
+names(df)
+names(df2)
+names(data_noNA)
+
+# row bind
+df <- rbind(data_noNA, df2)
+names(df)
+dim(df)
+
+df <- summarize(df %>% group_by(date), steps = sum(steps))
+
+qplot(date, steps, data = df, stat = "identity", geom = "histogram") +
+    geom_histogram(binwidth = 10) +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 5)) +
+    xlab("observation dates") +
+    ylab("total steps") +
+    labs(title = "imputed missing values")
+
+avg <- mean(df$steps)
+print(paste("the mean with imputed missing values is ", avg))
+
+med <- median(df$steps)
+print(paste("the median with imputed missing values is ", med))
+
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
 

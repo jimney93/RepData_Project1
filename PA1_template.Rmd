@@ -61,7 +61,7 @@ sprintf("Number of missing values %.0f", sumNA)
 
 ```
 #### use interval mean of primary data set to address NA values
-```{r supply missing values, message=FALSE, warning=FALSE, echo=FALSE}
+```{r supply missing values, message=FALSE, warning=FALSE}
 library(dplyr)
 library(ggplot2)
 

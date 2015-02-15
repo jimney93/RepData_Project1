@@ -84,10 +84,50 @@ sprintf("Number of missing values %.0f", sumNA)
 ## [1] "Number of missing values 2304"
 ```
 #### use interval mean of primary data set to address NA values
+
+```r
+library(dplyr)
+library(ggplot2)
+
+# NA rows 
+data_NA <- filter(data, is.na(steps))
+data_noNA <- filter(data, !is.na(steps))
+data_NA$steps <- NULL
+
+# add steps column with mean steps previously calculated
+df2 <- inner_join(data_NA, df_interval)
+
+# re-arrange columns in preparation of rbind
+df2 <- df2[c(3, 1, 2)]
+
+# row bind
+df <- rbind(data_noNA, df2)
+
+# re-calculate total steps per day
+df_date <- summarize(df %>% group_by(date), steps = sum(steps))
+
+qplot(date, steps, data = df_date, stat = "identity", geom = "histogram") +
+    geom_histogram(binwidth = 10) +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 5)) +
+    xlab("observation dates") +
+    ylab("total steps") +
+    labs(title = "imputed missing values")
+```
+
 ![](PA1_template_files/figure-html/supply missing values-1.png) 
+
+```r
+avg <- mean(df_date$steps)
+print(paste("the mean with imputed missing values is ", avg))
+```
 
 ```
 ## [1] "the mean with imputed missing values is  10766.1886792453"
+```
+
+```r
+med <- median(df_date$steps)
+print(paste("the median with imputed missing values is ", med))
 ```
 
 ```
